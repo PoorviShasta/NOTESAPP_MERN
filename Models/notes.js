@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const noteSchema = new mongoose.Schema({ //defines structure of document.
   title: {
     type: String,
