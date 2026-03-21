@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="app-page">
+
+    <%- include('partials/flash') %>
+
+    <div class="page">
+        <header class="panel topbar">
+            <div class="brand">
+                <span class="brand-mark">N</span>
+                <div class="brand-copy">
+                    <strong>Notebook</strong>
+                    <span>Thoughts, plans, and snapshots in one place</span>
+                </div>
+            </div>
+            <span class="meta-chip"><%= totalNotes %> note<%= totalNotes === 1 ? '' : 's' %></span>
+        </header>
+
+        <section class="panel section-block">
+            <div class="section-head">
+                <div>
+                    <p class="kicker">Quick Capture</p>
+                    <h2>Create a new note</h2>
+                </div>
+            </div>
+
+            <form action="/notes/create" method="POST" enctype="multipart/form-data" class="stack">
+                <div class="form-row">
+                    <div class="field">
+                        <label for="title" class="label">Title</label>
+                        <input id="title" type="text" name="title" class="input" placeholder="Meeting summary" required autocomplete="off">
+                    </div>
+
+                    <div class="field">
+                        <label for="media" class="label">Attachment</label>
+                        <input id="media" type="file" name="media" class="input file" accept="image/*">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="content" class="label">Content</label>
+                    <textarea id="content" name="content" class="textarea" placeholder="Write your note here..." required></textarea>
+                </div>
+
+                <div class="button-row">
+                    <button type="submit" class="btn btn-primary">Save Note</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="panel section-block">
+            <div class="section-head">
+                <div>
+                    <p class="kicker">Library</p>
+                    <h2>Your notes</h2>
+                </div>
+                <a href="/notes?sort=<%= sortOrder === 'newest' ? 'oldest' : 'newest' %>&page=<%= currentPage %>" class="btn btn-ghost">
+                    <%= sortOrder === 'newest' ? 'Show Oldest First' : 'Show Newest First' %>
+                </a>
+            </div>
+
+            <% if (notes.length === 0) { %>
+                <div class="empty-state">
+                    <p class="empty-eyebrow">No notes yet</p>
+                    <h3>Start with your first idea.</h3>
+                    <p>Use the form above to save text and optional image attachments.</p>
+                </div>
+            <% } else { %>
+                <div class="notes-grid">
+                    <% notes.forEach(note => { %>
+                        <article class="note-card">
+                            <div class="note-meta">
+                                <span><%= new Date(note.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></span>
+                                <span><%= new Date(note.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) %></span>
+                            </div>
+
+                            <h3 class="note-title"><%= note.title %></h3>
+                            <p class="note-content"><%= note.content %></p>
+
+                            <% if (note.media) { %>
+                                <img src="/uploads/<%= encodeURIComponent(note.media) %>" alt="Note attachment" class="note-image">
+                            <% } %>
+
+                            <div class="note-actions">
+                                <a href="/notes/edit/<%= note._id %>" class="btn btn-ghost">Edit</a>
+                                <form action="/notes/delete/<%= note._id %>" method="POST" class="note-form">
+                                    <button type="submit" class="btn btn-danger btn-wide">Delete</button>
+                                </form>
+                            </div>
+                        </article>
+                    <% }) %>
+                </div>
+
+                <% if (totalPages > 1) { %>
+                    <nav class="pagination" aria-label="Notes pages">
+                        <% if (currentPage > 1) { %>
+                            <a href="/notes?sort=<%= sortOrder %>&page=<%= currentPage - 1 %>" class="btn btn-ghost">Previous</a>
+                        <% } else { %>
+                            <span class="btn btn-ghost btn-disabled" aria-disabled="true">Previous</span>
+                        <% } %>
+
+                        <span class="pagination-info">Page <%= currentPage %> of <%= totalPages %></span>
+
+                        <% if (currentPage < totalPages) { %>
+                            <a href="/notes?sort=<%= sortOrder %>&page=<%= currentPage + 1 %>" class="btn btn-ghost">Next</a>
+                        <% } else { %>
+                            <span class="btn btn-ghost btn-disabled" aria-disabled="true">Next</span>
+                        <% } %>
+                    </nav>
+                <% } %>
+            <% } %>
+        </section>
+    </div>
+
+</body>
+</html>
