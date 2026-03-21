@@ -1,0 +1,36 @@
+<%
+const successList = Array.isArray(successMessages) ? successMessages : [];
+const errorList = Array.isArray(errorMessages) ? errorMessages : [];
+const hasFlashMessages = successList.length > 0 || errorList.length > 0;
+%>
+<% if (hasFlashMessages) { %>
+    <div class="flash-stack" id="flash-stack">
+        <% successList.forEach((message) => { %>
+            <div class="flash-message flash-success" role="status" aria-live="polite"><%= message %></div>
+        <% }) %>
+
+        <% errorList.forEach((message) => { %>
+            <div class="flash-message flash-error" role="alert"><%= message %></div>
+        <% }) %>
+    </div>
+
+    <script>
+        (function () {
+            const flashStack = document.getElementById('flash-stack');
+            if (!flashStack) return;
+
+            const messages = flashStack.querySelectorAll('.flash-message');
+            messages.forEach((message, index) => {
+                setTimeout(() => {
+                    message.classList.add('is-hiding');
+                    setTimeout(() => {
+                        message.remove();
+                        if (!flashStack.querySelector('.flash-message')) {
+                            flashStack.remove();
+                        }
+                    }, 260);
+                }, 3000 + (index * 180));
+            });
+        })();
+    </script>
+<% } %>
