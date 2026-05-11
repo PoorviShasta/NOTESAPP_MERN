@@ -1,11 +1,7 @@
 
-
-
-// router.get('/', authMiddleware, async (req, res) => {
-//     const 
 const express = require('express');
 const router = express.Router();
-const Note = require('../models/notes'); // import model in routes folder 
+const Note = require('../models/notes'); 
 const upload = require('../middleware/upload');
 const auth = require('../middleware/auth');
 
