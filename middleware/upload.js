@@ -4,7 +4,7 @@ const path = require('path'); // helps us moange file names and extensions prope
 // Storage configuration
 const storage = multer.diskStorage({ // save uploaded files  inside a folder.
     destination: function (req, file, cb) {
-        cb(null, 'uploads/'); //
+        cb(null, 'uploads/'); 
     },
     filename: function (req, file, cb) {
         const uniqueName = Date.now() + path.extname(file.originalname);
